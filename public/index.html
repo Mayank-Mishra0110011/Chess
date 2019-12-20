@@ -19,9 +19,6 @@
 	<link rel="shortcut icon" href="#" type="image/x-icon">
 
 	<style>
-		* {
-			cursor: pointer;
-		}
 		body {
 			margin:0;
 			padding:0;
@@ -29,6 +26,33 @@
 		}
 		canvas {
 			margin:auto;
+		}
+		.btn-sm {
+			width: 268px !important;
+			height: 64px !important;
+			font-size: 2em !important;
+		}
+		.btn {
+			width: 324px;
+			height: 84px;
+			border-radius: 100px;
+			background-color: orange;
+			color: white;
+			cursor: pointer;
+			font-family: 'Courier New', Courier, monospace;
+			font-size: 3em;
+			border: none;
+			-webkit-transition-duration: 0.2s;
+			transition-duration: 0.2s;
+			outline: 0 !important;
+			-webkit-appearance: none !important;
+			box-shadow: none !important;
+		}
+		.btn:hover {
+			box-shadow: 0 10px 10px -10px rgba(0, 0, 0, 0.5);
+			-webkit-transform: scale(1.1);
+			-ms-transform: scale(1.1);
+			transform: scale(1.1);
 		}
 	</style>
 </head>

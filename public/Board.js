@@ -3,8 +3,10 @@ class Board {
 		this.width = width / 8;
 		this.height = height / 8;
 		this.grid = new Array(8).fill().map(() => new Array(8));
+		this.mirror = false;
 		let topPiece;
 		if (topColor) {
+			this.mirror = true;
 			if (topColor == 'black') {
 				topPiece = pieces.black;
 			} else {
@@ -142,7 +144,7 @@ class Board {
 				if (this.grid[i][j].piece) {
 					if (mouseX >= this.grid[i][j].x && mouseX < this.grid[i][j].x + this.width) {
 						if (mouseY >= this.grid[i][j].y && mouseY < this.grid[i][j].y + this.height) {
-							if (this.grid[i][j].piece.color == turn) {
+							if (this.grid[i][j].piece.color == turn && currentPlayer == turn) {
 								fill(207, 167, 110);
 								noStroke();
 								rect(this.grid[i][j].x, this.grid[i][j].y, this.width, 10);
@@ -161,6 +163,18 @@ class Board {
 						}
 					}
 					if (this.grid[i][j].piece.locked && this.grid[i][j].piece.color == turn) {
+						fill(207, 167, 110);
+						noStroke();
+						rect(this.grid[i][j].x, this.grid[i][j].y, this.width, 10);
+						rect(this.grid[i][j].x, this.grid[i][j].y, 10, this.height);
+						rect(this.grid[i][j].x + this.width - 10, this.grid[i][j].y, 10, this.height);
+						rect(this.grid[i][j].x, this.grid[i][j].y + this.height - 10, this.width, 10);
+						stroke(0);
+						image(
+							this.grid[i][j].piece.img,
+							this.grid[i][j].x + this.width / 3,
+							this.grid[i][j].y + this.height / 4
+						);
 						this.grid[i][j].piece.showMoves(i, j);
 					}
 					image(
@@ -177,15 +191,31 @@ class Board {
 			for (let j = 0; j < this.grid[i].length; j++) {
 				if (i % 2 === 0) {
 					if (j % 2 === 0) {
-						fill(255);
+						if (this.mirror) {
+							fill(75, 54, 33);
+						} else {
+							fill(255);
+						}
 					} else {
-						fill(75, 54, 33);
+						if (this.mirror) {
+							fill(255);
+						} else {
+							fill(75, 54, 33);
+						}
 					}
 				} else {
 					if (j % 2 === 0) {
-						fill(75, 54, 33);
+						if (this.mirror) {
+							fill(255);
+						} else {
+							fill(75, 54, 33);
+						}
 					} else {
-						fill(255);
+						if (this.mirror) {
+							fill(75, 54, 33);
+						} else {
+							fill(255);
+						}
 					}
 				}
 				rect(this.grid[i][j].x, this.grid[i][j].y, this.width, this.height);

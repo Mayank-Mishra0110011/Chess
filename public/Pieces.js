@@ -781,56 +781,58 @@ class Queen {
 }
 
 function mouseClicked() {
-	if (moveLocked) {
-		let from, to;
+	if (gameStarted && currentPlayer == turn && !waiting) {
+		if (moveLocked) {
+			let from, to;
+			for (let i = 0; i < board.grid.length; i++) {
+				for (let j = 0; j < board.grid[i].length; j++) {
+					if (board.grid[i][j].piece && board.grid[i][j].piece.locked) {
+						from = { _i: i, _j: j };
+					}
+					if (mouseX >= board.grid[i][j].x && mouseX < board.grid[i][j].x + board.width) {
+						if (mouseY >= board.grid[i][j].y && mouseY < board.grid[i][j].y + board.height) {
+							to = { _i: i, _j: j };
+						}
+					}
+				}
+			}
+			if (board.grid[from._i][from._j].piece.isValidMove(from._i, from._j, to)) {
+				if (turn == 'white') {
+					turn = 'black';
+				} else {
+					turn = 'white';
+				}
+				emit('end', {
+					currentTurn: turn,
+					player: currentPlayer,
+					piece: board.grid[from._i][from._j].piece,
+					move: {
+						From: from,
+						To: to
+					}
+				});
+				return;
+			}
+		}
+		moveLocked = !moveLocked;
 		for (let i = 0; i < board.grid.length; i++) {
 			for (let j = 0; j < board.grid[i].length; j++) {
-				if (board.grid[i][j].piece && board.grid[i][j].piece.locked) {
-					from = { _i: i, _j: j };
+				if (board.grid[i][j].piece) {
+					board.grid[i][j].piece.locked = false;
 				}
 				if (mouseX >= board.grid[i][j].x && mouseX < board.grid[i][j].x + board.width) {
 					if (mouseY >= board.grid[i][j].y && mouseY < board.grid[i][j].y + board.height) {
-						to = { _i: i, _j: j };
+						if (board.grid[i][j].piece && board.grid[i][j].piece.color == turn) {
+							board.grid[i][j].piece.locked = !board.grid[i][j].piece.locked;
+							moveLocked = true;
+							return;
+						}
 					}
 				}
 			}
 		}
-		if (board.grid[from._i][from._j].piece.isValidMove(from._i, from._j, to)) {
-			if (turn == 'white') {
-				turn = 'black';
-			} else {
-				turn = 'white';
-			}
-			emit('end', {
-				currentTurn: turn,
-				player: currentPlayer,
-				piece: board.grid[from._i][from._j].piece,
-				move: {
-					From: from,
-					To: to
-				}
-			});
-			return;
-		}
+		if (moveLocked) moveLocked = !moveLocked;
 	}
-	moveLocked = !moveLocked;
-	for (let i = 0; i < board.grid.length; i++) {
-		for (let j = 0; j < board.grid[i].length; j++) {
-			if (board.grid[i][j].piece) {
-				board.grid[i][j].piece.locked = false;
-			}
-			if (mouseX >= board.grid[i][j].x && mouseX < board.grid[i][j].x + board.width) {
-				if (mouseY >= board.grid[i][j].y && mouseY < board.grid[i][j].y + board.height) {
-					if (board.grid[i][j].piece && board.grid[i][j].piece.color == turn) {
-						board.grid[i][j].piece.locked = !board.grid[i][j].piece.locked;
-						moveLocked = true;
-						return;
-					}
-				}
-			}
-		}
-	}
-	if (moveLocked) moveLocked = !moveLocked;
 }
 
 function move(from, to) {

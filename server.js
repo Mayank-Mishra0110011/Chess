@@ -10,24 +10,35 @@ app.use(express.static('public'));
 
 const io = socket(server);
 
-let player1 = Math.random() > 0.5 ? 'black' : 'white';
-let player2 = player1 == 'white' ? 'black' : 'white';
-let sentPlayer1;
+let player1, player2, firstTurn;
+connections = 0;
 
 io.on('connection', (socket) => {
-	console.log('connection established');
-	if (!sentPlayer1) {
-		io.sockets.emit('start', {
-			currentTurn: Math.random() > 0.5 ? 'black' : 'white',
-			player: player1
-		});
-		sentPlayer1 = true;
-	} else {
-		io.sockets.emit('start', {
-			currentTurn: Math.random() > 0.5 ? 'black' : 'white',
-			player: player2
-		});
+	connections++;
+	console.log(`Socket ${socket.id} Connected`);
+	console.log(`${connections} connected`);
+	if (connections == 2) {
+		player1 = Math.random() > 0.5 ? 'black' : 'white';
+		player2 = player1 == 'white' ? 'black' : 'white';
+		firstTurn = Math.random() > 0.5 ? 'black' : 'white';
+		io.sockets.emit('ready');
 	}
+	socket.on('start', (data) => {
+		console.log(player1, player2, firstTurn);
+		socket.emit('start', {
+			currentTurn: firstTurn,
+			player: player1 == null ? player2 : player1
+		});
+		player1 = null;
+	});
+	socket.on('disconnect', () => {
+		connections--;
+		console.log(`Socket ${socket.id} Disconnected`);
+		console.log(`${connections} connected`);
+		if (connections == 1) {
+			io.sockets.emit('gameOver');
+		}
+	});
 	socket.on('end', (data) => {
 		io.sockets.emit('end', data);
 	});
