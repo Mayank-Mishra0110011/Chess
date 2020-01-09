@@ -15,16 +15,13 @@ connections = 0;
 
 io.on('connection', (socket) => {
 	connections++;
-	console.log(`Socket ${socket.id} Connected`);
-	console.log(`${connections} connected`);
 	if (connections == 2) {
 		player1 = Math.random() > 0.5 ? 'black' : 'white';
 		player2 = player1 == 'white' ? 'black' : 'white';
 		firstTurn = Math.random() > 0.5 ? 'black' : 'white';
 		io.sockets.emit('ready');
 	}
-	socket.on('start', (data) => {
-		console.log(player1, player2, firstTurn);
+	socket.on('start', () => {
 		socket.emit('start', {
 			currentTurn: firstTurn,
 			player: player1 == null ? player2 : player1
@@ -33,8 +30,6 @@ io.on('connection', (socket) => {
 	});
 	socket.on('disconnect', () => {
 		connections--;
-		console.log(`Socket ${socket.id} Disconnected`);
-		console.log(`${connections} connected`);
 		if (connections == 1) {
 			io.sockets.emit('gameOver');
 		}

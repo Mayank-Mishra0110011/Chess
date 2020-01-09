@@ -8,6 +8,8 @@
 let board,
 	turn,
 	currentPlayer,
+	againstComputer = false,
+	cpuPlayBtn,
 	gameStarted = false,
 	playBtn,
 	quitBtn,
@@ -23,8 +25,12 @@ let board,
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	quitBtn = createButton('Quit Game').position(windowWidth - 474, 100).class('btn btn-sm').mouseClicked(destroy);
-	playBtn = createButton('Play')
+	cpuPlayBtn = createButton('Play Against Computer')
 		.position(windowWidth / 2 - 324 / 2, windowHeight / 2 - 84 / 2)
+		.class('btn')
+		.mouseClicked(initCPU);
+	playBtn = createButton('Play Against Human')
+		.position(windowWidth / 2 - 324 / 2, windowHeight / 2 + 84)
 		.class('btn')
 		.mouseClicked(init);
 	spinner = loadImage('./assets/img/spinner.gif');
@@ -41,6 +47,8 @@ function draw() {
 		if (!waiting) {
 			board.drawBoard();
 			board.drawPieces();
+			if (againstComputer && turn != currentPlayer) {
+			}
 			textSize(52);
 			fill(0);
 			text(`${turn}'s turn`, 900, 300);
@@ -74,6 +82,7 @@ function init() {
 	wbd = false;
 	connect();
 	playBtn.hide();
+	cpuPlayBtn.hide();
 	_spinner.show();
 	gameStarted = true;
 	waiting = true;
@@ -94,8 +103,13 @@ function init() {
 
 function destroy() {
 	document.body.style.cursor = 'default';
-	disconnect();
+	if (!againstComputer) {
+		disconnect();
+	} else {
+		againstComputer = false;
+	}
 	quitBtn.hide();
+	cpuPlayBtn.show();
 	playBtn.show();
 	board = null;
 	gameStarted = false;
@@ -107,4 +121,30 @@ function destroy() {
 function winByDefault() {
 	destroy();
 	wbd = true;
+}
+
+function initCPU() {
+	wbd = false;
+	againstComputer = true;
+	playBtn.hide();
+	cpuPlayBtn.hide();
+	quitBtn.show();
+	gameStarted = true;
+	waiting = false;
+	document.body.style.cursor = 'pointer';
+	pieces.black.rook = () => new Rook('black');
+	pieces.black.king = () => new King('black');
+	pieces.black.queen = () => new Queen('black');
+	pieces.black.bishop = () => new Bishop('black');
+	pieces.black.knight = () => new Knight('black');
+	pieces.black.pawn = () => new Pawn('black');
+	pieces.white.rook = () => new Rook('white');
+	pieces.white.king = () => new King('white');
+	pieces.white.queen = () => new Queen('white');
+	pieces.white.bishop = () => new Bishop('white');
+	pieces.white.knight = () => new Knight('white');
+	pieces.white.pawn = () => new Pawn('white');
+	turn = Math.random() > 0.5 ? 'black' : 'white';
+	currentPlayer = Math.random() > 0.5 ? 'black' : 'white';
+	board = new Board(800, windowHeight, currentPlayer);
 }
